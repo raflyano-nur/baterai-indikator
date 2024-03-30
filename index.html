@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      /*FONTS*/
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+
+      /* ANIMATION */
+      @keyframes Charging {
+          50%{
+              opacity: 0.1;
+          }
+          100%{
+              opacity: 1;
+          }
+      }
+
+      html{
+          overflow: hidden;
+      }
+      body{
+          overflow-y: hidden;
+          overflow-x: hidden;
+          background-image: linear-gradient(to right, #1FA2FF, #12D8FA, #A6FFCB);
+      }
+      .section::before{
+          content: '';
+          position: absolute;
+          bottom: 65%;
+          left: 55%;
+          width: 400px;
+          height: 400px;
+          background: linear-gradient(
+          to right bottom,
+          rgba(255, 255, 255, 0.8),
+          rgba(255, 255, 255, 0.3)
+        );
+          border-radius: 50%;
+      }
+      .section::after{
+          content: '';
+          position: absolute;
+          bottom: -6%;
+          left: 25%;
+          width: 300px;
+          height: 300px;
+          background: linear-gradient(
+              to right bottom,
+              rgba(255, 255, 255, 0.8),
+              rgba(255, 255, 255, 0.3)
+          );
+          border-radius: 50%;
+          z-index: -1;
+      }
+      .card{ /*Battery indicator card*/
+          width: 350px;
+          height: 450px;
+          background-color: #f3f3f3b5;
+          backdrop-filter: blur(7px);
+          border-radius: 20px;
+          margin: 5% auto;
+      }
+      .batteryShape{
+          display: flex;
+          justify-content: center;
+          min-height: 450px;
+          flex-direction: column;
+          align-items: center;
+      }
+      .batteryBorder{ /*Battery indicator border*/
+          border: 3px solid black;
+          width: 180px;
+          height: 80px;
+          border-radius: 10px;
+          position: relative;
+      }
+      .percentage{ /*Battery indicator main*/
+          position: absolute;
+          top: 4px;
+          bottom: 4px;
+          left: 4px;
+          right: 4px;
+          border-radius: 5px;
+          width: 50%;
+      }
+      .percent{ /*Battery indicator percent*/
+          font-family: 'Montserrat', sans-serif;
+          font-size: 25px;
+          margin: 10px;
+      }
+      .isCharging{ /*Battery indicator charging text*/
+          margin: 40px 0 0;
+          font-size: 25px;
+          font-family: 'Montserrat', sans-serif;
+          font-weight: 700;
+          animation: Charging 2s ease-in-out infinite;
+      }
+
+      /* RESPONSIVE */
+      @media screen and (max-width: 1024px){
+          .card{
+              width: 550px;
+              height: 550px;
+              margin: 25% auto;
+          }
+          .section::before{
+              position: absolute;
+              bottom: 70%;
+              left: 10%;
+              width: 400px;
+              height: 400px;
+          }
+          .section::after{
+              position: absolute;
+              bottom: 30%;
+              left: 55%;
+              width: 300px;
+              height: 300px;
+          }
+          .isCharging{
+              font-size: 20px;
+          }
+      }
+
+      @media screen and (max-width: 768px){
+          .card{
+              width: 550px;
+              height: 550px;
+              margin: 25% auto;
+          }
+          .section::before{
+              position: absolute;
+              bottom: 70%;
+              left: 0%;
+              width: 400px;
+              height: 400px;
+          }
+          .section::after{
+              position: absolute;
+              bottom: 10%;
+              left: 55%;
+              width: 300px;
+              height: 300px;
+          }
+          .isCharging{
+              font-size: 20px;
+          }
+      }
+
+      @media screen and (max-width: 501px){
+          .card{
+              width: 300px;
+              height: 450px;
+              margin: 25% auto;
+          }
+          .section::before{
+              position: absolute;
+              bottom: 70%;
+              left: -30%;
+              width: 300px;
+              height: 300px;
+          }
+          .section::after{
+              position: absolute;
+              bottom: 20%;
+              left: 35%;
+              width: 230px;
+              height: 230px;
+          }
+          .isCharging{
+              font-size: 20px;
+          }
+      }
+
+      @media screen and (max-width: 370px){
+          .card{
+              width: 300px;
+              height: 450px;
+              margin: 25% auto;
+          }
+          .section::before{
+              position: absolute;
+              bottom: 70%;
+              left: -30%;
+              width: 300px;
+              height: 300px;
+          }
+          .section::after{
+              position: absolute;
+              bottom: 5%;
+              left: 30%;
+              width: 200px;
+              height: 200px;
+          }
+          .isCharging{
+              font-size: 20px;
+          }
+      }
+    </style>
+    <title>Battery indicator | JavaScript</title>
+</head>
+<body>
+    <div class="section">
+        <div class="card">
+            <div class="batteryShape">
+                <div class="batteryBorder">
+                    <div class="percentage"></div>
+                </div>
+                <div class="percent"></div>
+                <p class="isCharging"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        navigator.getBattery().then(battery => {
+            var percentage = document.querySelector(".percentage");
+            var percent = document.querySelector(".percent");
+            var isCharging = document.querySelector(".isCharging");
+
+            function updateAllBatteryInfo() {
+                updateLevelInfo();
+                updateChargeInfo();
+            }
+
+            updateAllBatteryInfo();
+
+            function updateLevelInfo(){
+                var level = battery.level * 100;
+                percentage.style.width = level + '%';
+                percent.innerHTML = Math.floor(level) + '%';
+
+                // Mengubah warna berdasarkan level baterai
+                if (level <= 0) {
+                    percentage.style.background = 'red'; 
+                } else if (level <= 25) {
+                  percentage.style.background = 'orange'; 
+                } else if (level <= 50) {
+                  percentage.style.background = 'yellow'; 
+                } else if (level <= 75) {
+                  percentage.style.background = '#d7fc03'; 
+                } else {
+                  percentage.style.background = 'green';
+                } 
+            }
+                    function updateChargeInfo(){
+            isCharging.innerHTML = battery.charging ? "Your device is charging" : "";
+        }
+
+        battery.addEventListener('levelchange', () => {
+            updateLevelInfo();
+        });
+
+        battery.addEventListener('chargingchange', () => {
+            updateChargeInfo();
+        });
+
+    })
+</script>
+</body>
+</html>
